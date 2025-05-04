@@ -1,0 +1,17 @@
+/* 
+Some basic styles... 
+----------------------------------------------------- */
+
+
+fieldset {
+    color: #ffc34d; 
+	width: 50%
+}
+
+
+#userForm label {
+  width:100px;
+  float: left;
+  color: black;
+}
+
