@@ -1,5 +1,6 @@
-<?php
-$host = 'mysqlsrv.dcs.bbk.ac.uk';    #host name
+		<?php
+		#Your PHP solution code should go here...
+		$host = 'mysqlsrv.dcs.bbk.ac.uk';    #host name
         $db   = 'herges01db';                 #database name which is your selected/default schema
         $user = 'herges01';                #username loginID
         $pass = 'bbkmysql';                    #password
@@ -22,3 +23,4 @@ $host = 'mysqlsrv.dcs.bbk.ac.uk';    #host name
                 echo "</p>check your connection parameters.</p>";
                 echo "</p>PDOexception message: $errorMessage</p>";
         }
+		?>
