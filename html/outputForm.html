@@ -1,0 +1,30 @@
+<div id="userForm">
+    <form method="post" novalidate> <!-- post data to this script as no action attribute specified-->
+        <fieldset>
+            <div id="outputForm">
+                <label for="fromDate">From Date</label>
+                <input value = "[+fromDate+]" type="date" name="fromDate" id="fromDate" maxlength="45" size ="45">
+            </div>
+            <div id="outputForm">
+                <label for="toDate">To Date</label>
+                <input value = "[+toDate+]" type="date" name="toDate" id="toDate" maxlength="45" size ="45">
+            </div>
+            <div id="outputForm">
+                <label for="transactionCategory">Category</label>
+                <select name="transactionCategory" id="transactionCategory">
+                    <option value="All" [+allSelected+]>All</option>
+                    <option value="Necessity" [+necessitySelected+]>Necessity</option>
+                    <option value="Want" [+wantSelected+]>Want</option>
+                    <option value="Emergency" [+emergencySelected+] >Emergency</option>
+                </select>
+            </div>
+            <div id="buttonForm">
+                <input type="submit" name="dateSubmitted" value="Search">
+            </div>
+            <div id="buttonForm">
+                <input type="submit" name="ascSubmitted" value="Org by ascending">
+                <input type="submit" name="descSubmitted" value="Org by descending">
+            </div>
+        </fieldset>
+    </form>
+</div>
