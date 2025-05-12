@@ -26,10 +26,7 @@
 	
 	require_once 'includes/functions.php';  #user defined function library
 	require_once 'includes/config.php'; #database settings and connection
-	
-	print_r($_SESSION);
-	print_r($_GET);
-	print_r($_POST);
+
 	if (isset($_GET['view'])) {
     $view = $_GET['view'];
 	} 
@@ -58,28 +55,15 @@
 	}
 	
 	
-	if(isset($_SESSION['usertype'])){ #This is to ensure the correct nav menu always loads 
-		switch ($_SESSION['usertype']) {
-			case 'userTransaction':
-				$selectedNAV = ['home'=>'Home','student'=>'Student'];
-				break;
-			case 'userInput':
-				$selectedNAV = ['home'=>'Home','student'=>'Student','academic'=> 'Academic'];
-				break;
-			case 'admin' :
-				$selectedNAV = ['home'=>'Home','userTransaction'=> 'User Transaction','userInput'=> 'User Input','admin'=> 'Admin'];
-				break;
-			case 'userCreation':
-				$selectedNAV = ['home'=>'Home','userInput'=>'User Input'];
-				break;
-		}
+	if(isset($_SESSION['uname']) && isset(	$_SESSION['pwd'])){ #This is to ensure the correct nav menu always loads 
+		$selectedNAV = ['home'=>'Home','userTransaction'=> 'User Transaction','userInput'=> 'User Input','admin'=> 'Admin'];
 	}
 	else{
 		$selectedNAV = ['home'=>'Home','userCreation'=>'User Creation'];
 	}
 	
 	
-	$tableName = "usersTable";
+	$tableName = "projectUsersTable";
 	$validData = true; #assume form data will be valid unless set to false by validation function
 	$cleanData = array(); #holds form data which has passed validation
 	$placeholders = clearFormPlaceholders();
@@ -119,13 +103,15 @@
 	
 	if (isset($_POST['login']) and $validData) { #form submitted and no errors
 		if(UserExistsCheck($cleanData,$pdo, $db, $tableName)){ #ensures the details match
-			$usertype = UserTypeFetcher($cleanData,$pdo, $db, $tableName); 
-			SessionSet($_POST,$cleanData,$usertype); #sets the name of the sessions info
+			SessionSet($_POST,$cleanData); #sets the name of the sessions info
 			$selectedNAV = NAVsetter($_SESSION);
 			$userName = $_SESSION['uname'];
-			if (isset($_COOKIE[$userName])){
+			if (isset($_COOKIE[$userName]) && $_COOKIE[$userName] != 'userCreation'){
 				header('Location: ' . $_SERVER['PHP_SELF'] . '?view=' . $_COOKIE[$userName]); #after logging in, redirects you to the last page you were on
+			} else {
+				header('Location: ' . $_SERVER['PHP_SELF'] . '?view=home');
 			}
+			exit();
 		}
 		else {
 			$placeholders['[+loginError+]'] = "Wrong username or password";
