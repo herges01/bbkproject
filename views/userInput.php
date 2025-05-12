@@ -1,4 +1,3 @@
-
 <?php
 		#Your PHP solution code should go here...
 		$headTitle = "Input View";
@@ -15,7 +14,11 @@
 		$validData = true; #assume form data will be valid unless set to false by validation function
 		$cleanData = array(); #holds form data which has passed validation
 		$placeholders = clearInputFormPlaceholders(); #set all form placeholders to NULL (initial display)
+		echo '<pre>';
+		print_r($placeholders);
+		echo '</pre>';
 		
+
 		if (isset($_POST['userDataClear'])) { #clears the form of all data
 			$placeholders = clearInputFormPlaceholders();	
 		}
@@ -34,7 +37,7 @@
 			if(true){ #checks theres no duplicates
 				$content .= htmlParagraph('Inserted data successfully'); #display clean array
 				DataInputInserter($cleanData,$mainParams,$pdo,$db,$tableName); #inserts all the data into the database
-                $placeholders = clearInputFormPlaceholders($placeholders); #after successfully inserting the data we clear the data for the next data entry
+                $placeholders = clearInputFormPlaceholders(); #after successfully inserting the data we clear the data for the next data entry
 				$template = file_get_contents('html/userDataInputForm.html'); #get the html form template
 				$form = str_replace(array_keys($placeholders), array_values($placeholders), $template);
 			}
