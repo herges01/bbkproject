@@ -138,27 +138,9 @@ function htmlNAV($navData,$URLparams) {
 			}
 		}
 		
-		function UserTypeFetcher($cleanData,$pdo,$db,$tableName){
-		$sql = "SELECT  Usertype FROM `{$db}`.`{$tableName}` WHERE  Username = :username AND Password = :password"; #retrieves the usertype data from the database
-            try {
-                    $stmt = $pdo->prepare($sql);
-					$stmt->bindParam(':username', $cleanData['userName']); #binds the params in a prepared statement before executing
-					$stmt->bindParam(':password', $cleanData['password']);
-					$stmt->execute();
-					
-					$usertype = $stmt->fetchColumn();
-					return $usertype;
-            } catch (PDOException $e) { #handle any errors
-                    $errorCode = $e->getCode();
-                    $errorMessage = $e->getMessage();
-                    echo "</p>$errorCode : $errorMessage</p>";
-                    return false;
-            }	
-		}
-		function SessionSet($data,$cleanData,$usertype){
+		function SessionSet($data,$cleanData){
 		$_SESSION['uname'] = $cleanData['userName'];
 		$_SESSION['pwd'] = $cleanData['password'];
-		$_SESSION['usertype'] = $usertype;
 		}
 		
 		function UserDataFetcher($pdo,$db,$tableName){
@@ -223,12 +205,7 @@ function htmlNAV($navData,$URLparams) {
 		}
 		
 		function clearFormPlaceholdersLogin() {
-			$placeHolders = ['[+academicSelected+]'=>'',
-						 '[+adminSelected+]'=>'',
-						 '[+studentSelected+]'=>'',
-						 '[+usertypeError+]'=>'',
-						 '[+email+]'=>'',
-						 '[+emailError+]'=>'',
+			$placeHolders = [
 						 '[+username+]'=>'',
 						 '[+usernameError+]'=>'',
 						 '[+password+]'=>'',
@@ -243,29 +220,10 @@ function htmlNAV($navData,$URLparams) {
 			$formPlaceholders = clearFormPlaceholders(); #reset all form placeholders to NULL
 		
 			#set the value placeholders for the form data submitted
-			$usertypeSelectedPlaceholder = "[+$formData[userType]Selected+]";
-			$formPlaceholders[$usertypeSelectedPlaceholder] = 'selected';
-			$formPlaceholders['[+email+]'] = trim(htmlentities($formData['email']));
 			$formPlaceholders['[+username+]'] = trim(htmlentities($formData['username']));
 			$formPlaceholders['[+password+]'] = trim(htmlentities($formData['password']));
 		
 			#validate the individual form data elements; setting clean data and any errors messages
-		
-			if (validUserType(trim($formData['userType']))) {
-				$cleanData['userType'] = trim($formData['userType']); #store in clean data array
-			} 
-			else {
-				$validData = false;
-				$formPlaceholders['[+usertypeError+]'] = "Usertype must be one of 'Academic', 'Admin', or 'Student'"; 
-			}
-	
-			if (validEmail(trim($formData['email']))) {
-				$cleanData['email'] = trim($formData['email']);
-			} 
-			else {
-				$validData = false;
-				$formPlaceholders['[+emailError+]'] = "Invalid email format";
-			}
 		
 			if (validUserName(trim($formData['username']))) { 
 				$cleanData['username'] = trim($formData['username']); #store in clean data array
@@ -284,24 +242,6 @@ function htmlNAV($navData,$URLparams) {
 			}
 			#Return valid data Boolean, clean data array and placeholders array     
 			return [$validData, $cleanData, $formPlaceholders];
-			}
-	
-		#individual validation functions for each form input element
-		function validUserType($usertype) {
-			if (in_array($usertype, array('academic', 'admin', 'student'))) {
-				return true;
-			} 
-			else {
-				return false;
-			}
-		}
-			function validEmail($email) {
-				if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
-					return true;
-				} 
-				else {
-					return false;
-				}
 			}
 			function htmlTable($data) {
 				if (!is_array($data) || empty($data)) {
@@ -373,126 +313,114 @@ function htmlNAV($navData,$URLparams) {
 				#process the submitted form data setting placeholders and validates all the form data elements
 				$validData = true; #assume all form data is valid until any one form element fails
 				$cleanData = array(); #array to hold form data which passes validation
-				$formPlaceholders = clearFormPlaceholders(); #reset all form placeholders to NULL
+				$formPlaceholders = clearInputFormPlaceholders(); #reset all form placeholders to NULL
 			
 				#set the value placeholders for the form data submitted
 				$categoryTypeSelected = "[+{$formData['transactionCategory']}Selected+]";
 				$formPlaceholders[$categoryTypeSelected] = 'selected';
-				$formPlaceholders['[+date+]'] = trim(htmlentities($formData['date']));
-				$formPlaceholders['[+transaction+]'] = trim(htmlentities($formData['transaction']));
-				$formPlaceholders['[+amount+]'] = trim(htmlentities($formData['amount']));
+				$formPlaceholders['[+date+]'] = isset($formData['date']) ? trim(htmlentities($formData['date'])) : '';
+				$formPlaceholders['[+transaction+]'] = isset($formData['transaction']) ? trim(htmlentities($formData['transaction'])) : '';
+				$formPlaceholders['[+amount+]'] = isset($formData['amount']) ? trim(htmlentities($formData['amount'])) : '';
 				
 			
 				#validate the individual form data elements; setting clean data and any errors messages
 			
 			
-				if (validTransactionCategory(trim($formData['transactionCategory']))) { 
-					$cleanData['transactionCategory'] = trim($formData['transactionCategory']); #store in clean data array
-				} 
-				else {
+				if (!isset($formData['transaction']) || empty(trim($formData['transaction']))) {
 					$validData = false;
-					$formPlaceholders['[+transactionCategoryError+]'] = 'Transaction category must be one of "Necessity", "Want", or "Emergency"';
+					$formPlaceholders['[+transactionError+]'] = 'Transaction is required';
 				}
-			
-				if (validDate(trim($formData['date']))) {
-					$cleanData['date'] = trim($formData['date']);
-				} 
-				else {
-					$validData = false;
-					$formPlaceholders['[+dateError+]'] = 'Date must be in the format YYYY-MM-DD';
-				}
-	
-				if (validTransaction(trim($formData['transaction']))) {
-					$cleanData['transaction'] = trim($formData['transaction']);
-				} 
-				else {
+				else if (!validTransaction(trim($formData['transaction']))) {
 					$validData = false;
 					$formPlaceholders['[+transactionError+]'] = 'Transaction must be a string';
 				}
-				
-				if (validTransactionAmount(trim($formData['amount']))) {
-					$cleanData['amount'] = trim($formData['amount']);
-				} 
 				else {
+					$cleanData['transaction'] = trim($formData['transaction']);
+				}
+
+				if (!isset($formData['date']) || empty(trim($formData['date']))) {
+					$validData = false;
+					$formPlaceholders['[+dateError+]'] = 'Date is required';
+				}
+				else if (!validDate(trim($formData['date']))) {
+					$validData = false;
+					$formPlaceholders['[+dateError+]'] = 'Date must be in the format YYYY-MM-DD';
+				}
+				else {
+					$cleanData['date'] = trim($formData['date']);
+				}
+
+				if (!isset($formData['amount']) || empty(trim($formData['amount']))) {
+					$validData = false;
+					$formPlaceholders['[+amountError+]'] = 'Amount is required';
+				}
+				else if (!validTransactionAmount(trim($formData['amount']))) {
 					$validData = false;
 					$formPlaceholders['[+amountError+]'] = 'Amount must be a number';
 				}
-				#Return valid data Boolean, clean data array and placeholders array     
-				return [$validData, $cleanData, $formPlaceholders];
-				}
-	
-				function validTransactionCategory($transactionCategory) {
-					if (in_array($transactionCategory, array('Necessity', 'Want', 'Emergency'))) {
-						return true;
-					}
-					else {
-						return false;
-					}
-				}
-	
-				function validDate($date) {
-					if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $date)) {
-						return true;
-					}
-					else {
-						return false;
-					}
-				}
-	
-				function validTransaction($transaction) {
-					if (is_string($transaction)) {		
-						return true;
-					}
-					else {
-						return false;
-					}
-				}
-				function validTransactionAmount($amount) {
-					if (is_numeric($amount)) {	
-						return true;
-					}
-					else {
-						return false;
-					}
+				else {
+					$cleanData['amount'] = trim($formData['amount']);
 				}
 
-				function DataInserter($cleanData,$mainParams,$pdo,$db,$tableName){
-					echo '<pre>';
-					print_r($cleanData);
-					echo '</pre>';
-					$sql = "INSERT INTO `{$db}`.`{$tableName}` (`{$mainParams['email']}`,`{$mainParams['username']}`,`{$mainParams['password']}`,`{$mainParams['usertype']}`) 
-				VALUES 
-				 (:email, :username, :password, :usertype)";
-				try {
-					$stmt = $pdo->prepare($sql); #use PDO query method to insert data into table from $sql
-					$stmt->bindParam(':email', $cleanData['email']);
-					$stmt->bindParam(':username', $cleanData['username']); #binds the params and prepares the statement to avoid injection attacks
-					$stmt->bindParam(':password', $cleanData['password']);
-					$stmt->bindParam(':usertype', $cleanData['userType']);
-					$stmt->execute();
-				} 
-				catch (PDOException $e) {
-					$errorCode = $e->getCode();
-					$errorMessage = $e->getMessage();
-					if ($errorCode == 23000) {
-						return "<p>Data INSERT failed – duplicate data.</p>";
-					}
-					else {
-						return htmlParagraph("$errorCode : $errorMessage");
-					}
+				if (!isset($formData['transactionCategory']) || empty(trim($formData['transactionCategory']))) {
+					$validData = false;
+					$formPlaceholders['[+transactionCategoryError+]'] = 'Category is required';
+				}
+				else if (!validTransactionCategory(trim($formData['transactionCategory']))) {
+					$validData = false;
+					$formPlaceholders['[+transactionCategoryError+]'] = 'Transaction category must be one of "Necessity", "Want", or "Emergency"';
+				}
+				else {
+					$cleanData['transactionCategory'] = trim($formData['transactionCategory']);
+				}
+
+				return [$validData, $cleanData, $formPlaceholders];
+			}
+
+			function validTransactionCategory($transactionCategory) {
+				if (in_array($transactionCategory, array('Necessity', 'Want', 'Emergency'))) {
+					return true;
+				}
+				else {
+					return false;
 				}
 			}
 
-			function DataInputInserter($cleanData,$mainParams,$pdo,$db,$tableName){
-				$sql = "INSERT INTO `{$db}`.`{$tableName}` (`{$mainParams['date']}`,`{$mainParams['transaction']}`,`{$mainParams['amount']}`,`{$mainParams['category']}`) 
+			function validDate($date) {
+				if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $date)) {
+					return true;
+				}
+				else {
+					return false;
+				}
+			}
+
+			function validTransaction($transaction) {
+				if (is_string($transaction)) {		
+					return true;
+				}
+				else {
+					return false;
+				}
+			}
+			function validTransactionAmount($amount) {
+				if (is_numeric($amount)) {	
+					return true;
+				}
+				else {
+					return false;
+				}
+			}
+
+			function DataInserter($cleanData,$mainParams,$pdo,$db,$tableName){
+
+				$sql = "INSERT INTO `{$db}`.`{$tableName}` (`{$mainParams['username']}`,`{$mainParams['password']}`) 
 			VALUES 
-			 (:date, :transaction, :amount, :category)";
+			 (:username, :password)";
 			try {
 				$stmt = $pdo->prepare($sql); #use PDO query method to insert data into table from $sql
-				$stmt->bindParam(':date', $cleanData['date']); #binds the params and prepares the statement to avoid injection attacks
-				$stmt->bindParam(':transaction', $cleanData['transaction']);
-				$stmt->bindParam(':amount', $cleanData['amount']);
-				$stmt->bindParam(':category', $cleanData['transactionCategory']);
+				$stmt->bindParam(':username', $cleanData['username']); #binds the params and prepares the statement to avoid injection attacks
+				$stmt->bindParam(':password', $cleanData['password']);
 				$stmt->execute();
 			} 
 			catch (PDOException $e) {
@@ -506,68 +434,187 @@ function htmlNAV($navData,$URLparams) {
 				}
 			}
 		}
-	
-		function DateRange($fromDate,$toDate,$pdo,$db,$tableName,$mainParams){
-			$sql = "SELECT * FROM `{$db}`.`{$tableName}` WHERE `{$mainParams['date']}` BETWEEN :fromDate AND :toDate";
-			try {
-				$stmt = $pdo->prepare($sql);
-				$stmt->bindParam(':fromDate', $fromDate);
-				$stmt->bindParam(':toDate', $toDate);
-				$stmt->execute();
-				$data = $stmt->fetchAll(PDO::FETCH_ASSOC);
-				return $data;
-			}
-			catch (PDOException $e) {
-				$errorCode = $e->getCode();
-				$errorMessage = $e->getMessage();
-				return htmlParagraph("$errorCode : $errorMessage");
-			}
-		}		
 
-		function DateAscending($pdo,$db,$tableName,$mainParams){
-			$sql = "SELECT * FROM `{$db}`.`{$tableName}` ORDER BY `{$mainParams['date']}` ASC";
-			try {
-				$stmt = $pdo->prepare($sql);
-				$stmt->execute();
-				$data = $stmt->fetchAll(PDO::FETCH_ASSOC);	
-				return $data;
+		function DataInputInserter($cleanData,$mainParams,$pdo,$db,$tableName){
+			$sql = "INSERT INTO `{$db}`.`{$tableName}` (`{$mainParams['date']}`,`{$mainParams['transaction']}`,`{$mainParams['amount']}`,`{$mainParams['category']}`) 
+		VALUES 
+		 (:date, :transaction, :amount, :category)";
+		try {
+			$stmt = $pdo->prepare($sql); #use PDO query method to insert data into table from $sql
+			$stmt->bindParam(':date', $cleanData['date']); #binds the params and prepares the statement to avoid injection attacks
+			$stmt->bindParam(':transaction', $cleanData['transaction']);
+			$stmt->bindParam(':amount', $cleanData['amount']);
+			$stmt->bindParam(':category', $cleanData['transactionCategory']);
+			$stmt->execute();
+		} 
+		catch (PDOException $e) {
+			$errorCode = $e->getCode();
+			$errorMessage = $e->getMessage();
+			if ($errorCode == 23000) {
+				return "<p>Data INSERT failed – duplicate data.</p>";
 			}
-			catch (PDOException $e) {
-				$errorCode = $e->getCode();
-				$errorMessage = $e->getMessage();
+			else {
 				return htmlParagraph("$errorCode : $errorMessage");
-			}					
+			}
 		}
+	}
 
-		function DateDescending($pdo,$db,$tableName,$mainParams){
-			$sql = "SELECT * FROM `{$db}`.`{$tableName}` ORDER BY `{$mainParams['date']}` DESC";
-			try {
-				$stmt = $pdo->prepare($sql);
-				$stmt->execute();
-				$data = $stmt->fetchAll(PDO::FETCH_ASSOC);
-				return $data;
-			}
-			catch (PDOException $e) {
-				$errorCode = $e->getCode();
-				$errorMessage = $e->getMessage();
-				return htmlParagraph("$errorCode : $errorMessage");
-			}
-		}	
+	function DateRange($fromDate,$toDate,$pdo,$db,$tableName,$mainParams){
+		$sql = "SELECT * FROM `{$db}`.`{$tableName}` WHERE `{$mainParams['date']}` BETWEEN :fromDate AND :toDate";
+		try {
+			$stmt = $pdo->prepare($sql);
+			$stmt->bindParam(':fromDate', $fromDate);
+			$stmt->bindParam(':toDate', $toDate);
+			$stmt->execute();
+			$data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+			return $data;
+		}
+		catch (PDOException $e) {
+			$errorCode = $e->getCode();
+			$errorMessage = $e->getMessage();
+			return htmlParagraph("$errorCode : $errorMessage");
+		}
+	}		
 
-		function TransactionCategory($pdo,$db,$tableName,$mainParams,$category){
-			$sql = "SELECT DISTINCT * FROM `{$db}`.`{$tableName}` WHERE `{$mainParams['category']}` = :category";
-			try {
-				$stmt = $pdo->prepare($sql);
-				$stmt->bindParam(':category', $category);
-				$stmt->execute();		
-				$data = $stmt->fetchAll(PDO::FETCH_ASSOC);
-				return $data;
-			}
-			catch (PDOException $e) {
-				$errorCode = $e->getCode();
-				$errorMessage = $e->getMessage();
-				return htmlParagraph("$errorCode : $errorMessage");
-			}
-		}	
-?>
+	function DateAscending($pdo,$db,$tableName,$mainParams){
+		$sql = "SELECT * FROM `{$db}`.`{$tableName}` ORDER BY `{$mainParams['date']}` ASC";
+		try {
+			$stmt = $pdo->prepare($sql);
+			$stmt->execute();
+			$data = $stmt->fetchAll(PDO::FETCH_ASSOC);	
+			return $data;
+		}
+		catch (PDOException $e) {
+			$errorCode = $e->getCode();
+			$errorMessage = $e->getMessage();
+			return htmlParagraph("$errorCode : $errorMessage");
+		}					
+	}
+
+	function DateDescending($pdo,$db,$tableName,$mainParams){
+		$sql = "SELECT * FROM `{$db}`.`{$tableName}` ORDER BY `{$mainParams['date']}` DESC";
+		try {
+			$stmt = $pdo->prepare($sql);
+			$stmt->execute();
+			$data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+			return $data;
+		}
+		catch (PDOException $e) {
+			$errorCode = $e->getCode();
+			$errorMessage = $e->getMessage();
+			return htmlParagraph("$errorCode : $errorMessage");
+		}
+	}	
+
+	function TransactionCategory($pdo,$db,$tableName,$mainParams,$category){
+		$sql = "SELECT * FROM `{$db}`.`{$tableName}` WHERE `{$mainParams['category']}` = :category";
+		try {
+			$stmt = $pdo->prepare($sql);
+			$stmt->bindParam(':category', $category);
+			$stmt->execute();		
+			$data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+			return $data;
+		}
+		catch (PDOException $e) {
+			$errorCode = $e->getCode();
+			$errorMessage = $e->getMessage();
+			return htmlParagraph("$errorCode : $errorMessage");
+		}
+	}	
+
+	function TotalSpent($pdo,$db,$tableName,$mainParams){
+		$sql = "SELECT SUM(`{$mainParams['amount']}`) as 'Total Spent' FROM `{$db}`.`{$tableName}`";
+		try {
+			$stmt = $pdo->prepare($sql);
+			$stmt->execute();	
+			$data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+			return $data;
+		}
+		catch (PDOException $e) {
+			$errorCode = $e->getCode();
+			$errorMessage = $e->getMessage();
+			return htmlParagraph("$errorCode : $errorMessage");	
+		}
+	}	
+
+	function TotalSpentByCategory($pdo,$db,$tableName,$mainParams,$category){
+		$sql = "SELECT SUM(`{$mainParams['amount']}`) as 'Total Spent - {$category}' 
+				FROM `{$db}`.`{$tableName}` 
+				WHERE `{$mainParams['category']}` = :category";
+		try {
+			$stmt = $pdo->prepare($sql);
+			$stmt->bindParam(':category', $category);
+			$stmt->execute();
+			$data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+			return $data;
+		}
+		catch (PDOException $e) {	
+			$errorCode = $e->getCode();
+			$errorMessage = $e->getMessage();
+			return htmlParagraph("$errorCode : $errorMessage");
+		}
+	}
+
+	function AmountAscending($pdo,$db,$tableName,$mainParams){
+		$sql = "SELECT * FROM `{$db}`.`{$tableName}` ORDER BY `{$mainParams['amount']}` ASC";
+		try {
+			$stmt = $pdo->prepare($sql);
+			$stmt->execute();
+			$data = $stmt->fetchAll(PDO::FETCH_ASSOC);	
+			return $data;
+		}
+		catch (PDOException $e) {
+			$errorCode = $e->getCode();
+			$errorMessage = $e->getMessage();
+			return htmlParagraph("$errorCode : $errorMessage");
+		}
+	}
+
+	function AmountDescending($pdo,$db,$tableName,$mainParams){
+		$sql = "SELECT * FROM `{$db}`.`{$tableName}` ORDER BY `{$mainParams['amount']}` DESC";
+		try {
+			$stmt = $pdo->prepare($sql);
+			$stmt->execute();
+			$data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+			return $data;
+		}
+		catch (PDOException $e) {
+			$errorCode = $e->getCode();
+			$errorMessage = $e->getMessage();	
+			return htmlParagraph("$errorCode : $errorMessage");
+		}
+	}
+
+	function UpdateData($pdo,$db,$tableName,$mainParams,$cleanData){
+		$sql = "UPDATE `{$db}`.`{$tableName}` SET `{$mainParams['transaction']}` = :transaction, `{$mainParams['amount']}` = :amount, `{$mainParams['category']}` = :category WHERE `{$mainParams['id']}` = :id";
+		try {
+			$stmt = $pdo->prepare($sql);
+			$stmt->bindParam(':transaction', $cleanData['transaction']);
+			$stmt->bindParam(':amount', $cleanData['amount']);
+			$stmt->bindParam(':category', $cleanData['transactionCategory']);
+			$stmt->bindParam(':id', $cleanData['id']);
+			$stmt->execute();
+		}
+		catch (PDOException $e) {	
+			$errorCode = $e->getCode();
+			$errorMessage = $e->getMessage();
+			return htmlParagraph("$errorCode : $errorMessage");
+		}
+	}	
+
+	function DeleteUser($pdo, $db, $tableName, $userId) {
+		$sql = "DELETE FROM `{$db}`.`{$tableName}` WHERE `userID` = :userId";
+		try {
+			$stmt = $pdo->prepare($sql);
+			$stmt->bindParam(':userId', $userId);
+			$stmt->execute();
+			return true;
+		}
+		catch (PDOException $e) {
+			$errorCode = $e->getCode();
+			$errorMessage = $e->getMessage();
+			return htmlParagraph("$errorCode : $errorMessage");
+		}
+	}
+?>		
 
