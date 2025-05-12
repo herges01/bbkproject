@@ -2,11 +2,6 @@
 <form method="post" novalidate> <!-- post data to this script as no action attribute specified-->
 	<fieldset>
 		<div id="inputForm">
-			<label for="email">Email</label>
-			<input value = "[+email+]" type="text" name="email" id="email" maxlength="45" size ="45">
-			<span style="color:red"> [+emailError+]</span>
-		</div>
-		<div id="inputForm">
 			<label for="username">Username</label>
 			<input title="At least 10 characters,alphanumeric and unique."  value="[+username+]" type="text" name="username" id="username" maxlength="30" size ="45">
 			<span style="color:red"> [+usernameError+]</span>
@@ -16,14 +11,6 @@
 			<input title="At least 10 characters, must include: uppercase, lowercase alphabetic character, a number plus at least one of these special characters: £ $ % & * ~ #."  
 						value="[+password+]" type="text" name="password" id="password" maxlength="15" size ="45">
 						<span style="color:red"> [+passwordError+]</span>						
-		</div>
-		<div id="inputForm">
-			<label for="userType">User Type</label>
-			<select name="userType" id="userType">
-				<option value="academic" [+academicSelected+]>Academic</option>
-				<option value="admin" [+adminSelected+]>Admin</option>
-				<option value="student" [+studentSelected+] >Student</option>
-			</select>
 		</div>
 		<div id="inputForm">
 			<input type="submit" name="userDataSubmitted" value="Save">
