@@ -224,18 +224,24 @@ function validateformDatalogin($formData)
 
 	#validate the individual form data elements; setting clean data and any errors messages
 
-	if (validUserName(trim($formData['username']))) {
-		$cleanData['username'] = trim($formData['username']); #store in clean data array
-	} else {
+	if (!isset($formData['username']) || empty(trim($formData['username']))) {
+		$validData = false;
+		$formPlaceholders['[+usernameError+]'] = 'Username is required';
+	} elseif (!validUserName(trim($formData['username']))) {
 		$validData = false;
 		$formPlaceholders['[+usernameError+]'] = 'Username must be at least 10 characters and alphanumeric';
+	} else {
+		$cleanData['username'] = trim($formData['username']);
 	}
 
-	if (validPassword(trim($formData['password']))) {
-		$cleanData['password'] = trim($formData['password']);
-	} else {
+	if (!isset($formData['password']) || empty(trim($formData['password']))) {
+		$validData = false;	
+		$formPlaceholders['[+passwordError+]'] = 'Password is required';
+	} elseif (!validPassword(trim($formData['password']))) {
 		$validData = false;
-		$formPlaceholders['[+passwordError+]'] = '>= 10 characters; include one uppercase, lowercase, plus a digit';
+		$formPlaceholders['[+passwordError+]'] = 'Password must be at least 10 characters; include one uppercase, lowercase, plus a digit';
+	} else {
+		$cleanData['password'] = trim($formData['password']);
 	}
 	#Return valid data Boolean, clean data array and placeholders array     
 	return [$validData, $cleanData, $formPlaceholders];
