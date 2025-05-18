@@ -1,5 +1,5 @@
 <?php
-$headTitle = 'PHP Cwk2 Home Page';
+$headTitle = 'BSc Computing Project: Transaction Management System';
 $viewHeading = htmlHeading('Home Page View',2);
 #add your code here to display users stored in the database
 $tableName = "projectUsersTable";
