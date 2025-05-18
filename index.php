@@ -1,21 +1,7 @@
 
 <?php
 	session_start();
-/*	Web Programming Using PHP Cwk2 Task 4 
-	This script acts as the controller for a Single Point of Entry MVC design model
-	It's main functions are:
-	1. Include user defined functions and create a new PDO connection
-	2. Display login form and home page
-	3. If user submits login ID and pwd via login form, validate
-	4. If authenticated credentials create session and build NAV based on user type; display user and logout form
-	5. If user saved cookie, use to set last view, or display home view
-	6. If authenticated credentials allow browsing to NAV views and include and display any selected view
-	7. If user selects logout, destroy session and set user cookie for 10 days saving last view
-	
-*/
-
-	
-	
+		
 	require_once 'includes/functions.php';  #user defined function library
 	require_once 'includes/config.php'; #database settings and connection
 
