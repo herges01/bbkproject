@@ -1,11 +1,15 @@
 <form method="post">
-	<fieldset>
+	<fieldset id="loginout-form">
 	<legend>Login</legend>
 	<div>
 		<label for="un">Username:</label>
 		<input value="[+uName+]" type="text" name="userName" id="un">
+	</div>
+	<div>
 		<label for="pwd">Password:</label>
 		<input value="[+pwd+]" type="password" name="password" id="pwd">
+	</div>
+	<div>
 		<input type="submit" name="login" value="login">
 		<span style="color:red"> [+loginError+]</span>
 	</div>

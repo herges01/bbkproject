@@ -2,6 +2,9 @@
     <form method="post" novalidate> <!-- post data to this script as no action attribute specified-->
         <fieldset>
             <div id="inputForm">
+                <p>Please enter the the data of the transaction you wish to update or delete (For delete, only ID is required)</p>
+            </div>
+            <div id="inputForm">
                 <label for="id">ID</label>
                 <input value = "[+id+]" type="text" name="id" id="id" maxlength="45" size ="45">
                 <span style="color:red"> [+idError+]</span>
@@ -31,7 +34,10 @@
                 </select>
             </div>
             <div id="inputForm">
-                <input type="submit" name="userDataSubmitted" value="Save">
+                <input type="submit" name="userDeleteSubmitted" value="Delete">
+                <input type="submit" name="userUpdateSubmitted" value="Update">
+            </div>
+            <div id="inputForm">
                 <input type="submit" name="userDataClear" value="Clear">
             </div>
         </fieldset>

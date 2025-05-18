@@ -3,20 +3,50 @@
 <head>
     <title>[+title+]</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-	</head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <script>
+        function w3_open() {
+            document.getElementById("mySidebar").style.display = "block";
+        }
+        function w3_close() {
+            document.getElementById("mySidebar").style.display = "none";
+        }
+    </script>
+</head>
 <body>
-	<header>
-		<h1>BSc Computing Project: Transaction Management System</h1>
-		[+heading2+]
-		[+loginOutForm+]
-		[+nav+]
-	</header>
-	<main>
-		<!-- Selected View Heading -->
-		[+heading+]
-		<!-- Selected View content, as per the Functional Specification -->
-		[+form+]
-		[+content+]
-    </main> 
+    <div class="loginout-absolute">[+loginOutForm+]</div>
+    <!-- Sidebar -->
+    <nav class="w3-sidebar w3-red w3-collapse w3-top w3-large w3-padding" style="z-index:3;width:300px;font-weight:bold;" id="mySidebar">
+        <a href="javascript:void(0)" onclick="w3_close()" class="w3-button w3-hide-large w3-display-topleft" style="width:100%;font-size:22px">Close Menu</a>
+        <div class="w3-container">
+            <h3 class="w3-padding-64"><b>Transaction<br>Management</b></h3>
+        </div>
+        <div class="w3-bar-block">
+            [+nav+]
+        </div>
+    </nav>
+
+    <!-- Top menu on small screens -->
+    <header class="w3-container w3-top w3-hide-large w3-red w3-xlarge w3-padding">
+        <a href="javascript:void(0)" class="w3-button w3-red w3-margin-right" onclick="w3_open()">☰</a>
+        <span>Transaction Management</span>
+    </header>
+
+    <!-- Overlay effect when opening sidebar on small screens -->
+    <div class="w3-overlay w3-hide-large" onclick="w3_close()" style="cursor:pointer" title="close side menu" id="myOverlay"></div>
+
+    <main>
+        <div class="header-flex">
+            <h1>BSc Computing Project: Transaction Management System</h1>
+        </div>
+        [+heading2+]
+        <!-- Selected View Heading -->
+        [+heading+]
+        <!-- Selected View content, as per the Functional Specification -->
+        [+form+]
+        [+content+]
+    </main>
 </body>
 </html>
