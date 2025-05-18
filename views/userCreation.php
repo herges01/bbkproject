@@ -13,10 +13,6 @@ $form = '';    #HTML form to be displayed in page template
 $validData = true; #assume form data will be valid unless set to false by validation function
 $cleanData = array(); #holds form data which has passed validation
 $placeholdersLogin = clearFormPlaceholdersLogin(); #set all form placeholdersLogin to NULL (initial display)
-echo '<pre>';
-print_r($placeholdersLogin);
-echo '</pre>';
-
 
 if (isset($_POST['userDataClear'])) { #clears the form of all data
 	$placeholdersLogin = clearFormPlaceholdersLogin();
@@ -42,10 +38,7 @@ if (isset($_POST['userDataSubmitted']) and $validData) { #form submitted and no 
 	} else {
 		$content .= '<p style="color:red">' . 'Duplicate data found</p>';
 		$template = file_get_contents('html/userCreationForm.html'); #get the html form template
-		echo '<pre>';
-		print_r($placeholdersLogin);
-		echo '</pre>';
-		$placeholdersLogin = 
+		$placeholdersLogin = clearFormPlaceholdersLogin($placeholdersLogin);
 		$form = str_replace(array_keys($placeholdersLogin), array_values($placeholdersLogin), $template);
 	}
 } else { #display the html form with any clean data or error messages

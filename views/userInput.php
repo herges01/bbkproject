@@ -14,9 +14,6 @@
 		$validData = true; #assume form data will be valid unless set to false by validation function
 		$cleanData = array(); #holds form data which has passed validation
 		$placeholders = clearInputFormPlaceholders(); #set all form placeholders to NULL (initial display)
-		echo '<pre>';
-		print_r($placeholders);
-		echo '</pre>';
 		
 
 		if (isset($_POST['userDataClear'])) { #clears the form of all data
@@ -26,7 +23,7 @@
 			
 		if (isset($_POST['userDataSubmitted'])) { #data has been submitted to the form, validate it
 			#validate the form data items and set form placeholders and clean data array
-			$formData = validateInputFormData($_POST); 
+			$formData = validateInputformData($_POST); 
 			#returns 3 values [0]valid data Boolean [1]clean data [2]form placeholders
 			$validData = $formData[0]; #boolean returned to determine valid form data
 			$cleanData = $formData[1]; #data items passed validation indexed by form field key
@@ -59,7 +56,7 @@
 		TableCreate($mainParams,$mainParamsAtt,$pdo,$db,$tableName);
 		$template = file_get_contents('html/userCreationTemplate.html'); #get the html template contents
 		$content .= $form;
-		$content .= htmlHeading("Users Stored In The Database", 2);
+		$content .= htmlHeading("Transactions", 2);
 		$data = UserDataFetcher($pdo,$db,$tableName);
 		$content .= htmlTable($data);
 		?>

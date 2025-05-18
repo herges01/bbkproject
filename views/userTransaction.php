@@ -74,4 +74,3 @@ else{
     $content .= htmlTable($totalSpent);
     $content .= htmlTable($data);
 }   
-?>
