@@ -1,12 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <title>BSc Computing Project User Creation System</title>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-	<link rel="stylesheet" type="text/css" href="css/styles.css">
 
-</head>
-<body>
 <?php
 	session_start();
 /*	Web Programming Using PHP Cwk2 Task 4 
@@ -44,11 +36,14 @@
 		case 'userInput' :
 			include 'views/userInput.php';
 			break;
-		case 'admin' :
-			include 'views/admin.php';
+		case 'userDelUp' :
+			include 'views/userDelUp.php';
 			break;
 			case 'userCreation' :
 				include 'views/userCreation.php';
+				break;
+			case 'graph' :
+				include 'views/graph.php';
 				break;
 		default :
 			include 'views/404.php';
@@ -56,7 +51,7 @@
 	
 	
 	if(isset($_SESSION['uname']) && isset(	$_SESSION['pwd'])){ #This is to ensure the correct nav menu always loads 
-		$selectedNAV = ['home'=>'Home','userTransaction'=> 'User Transaction','userInput'=> 'User Input','admin'=> 'Admin'];
+		$selectedNAV = ['home'=>'Home','userTransaction'=> 'User Transaction','userInput'=> 'User Input','userDelUp'=> 'User Delete & Update','graph'=>'Graph'];
 	}
 	else{
 		$selectedNAV = ['home'=>'Home','userCreation'=>'User Creation'];
