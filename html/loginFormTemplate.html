@@ -1,17 +1,29 @@
-<form method="post">
-	<fieldset id="loginout-form">
-	<legend>Login</legend>
-	<div>
-		<label for="un">Username:</label>
-		<input value="[+uName+]" type="text" name="userName" id="un">
-	</div>
-	<div>
-		<label for="pwd">Password:</label>
-		<input value="[+pwd+]" type="password" name="password" id="pwd">
-	</div>
-	<div>
-		<input type="submit" name="login" value="login">
-		<span style="color:red"> [+loginError+]</span>
-	</div>
-	</fieldset>
-</form>
+<div class="loginout-absolute">
+    <form method="post">
+        <fieldset id="loginout-form">
+            <legend>Login</legend>
+            <div>
+                <label for="un">Username:</label>
+                <input value="[+uName+]" type="text" name="userName" id="un">
+            </div>
+            <div>
+                <label for="pwd">Password:</label>
+                <input value="[+pwd+]" type="password" name="password" id="pwd">
+            </div>
+            <div>
+                <input type="checkbox" onclick="togglePassword()"> Show Password
+            </div>
+            <div>
+                <input type="submit" name="login" value="Log in">
+                <span style="color:red">[+loginError+]</span>
+            </div>
+        </fieldset>
+    </form>
+</div>
+
+<script>
+    function togglePassword() {
+        const pwd = document.getElementById('pwd');
+        pwd.type = (pwd.type === 'password') ? 'text' : 'password';
+    }
+</script>

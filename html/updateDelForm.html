@@ -2,35 +2,37 @@
     <form method="post" novalidate> <!-- post data to this script as no action attribute specified-->
         <fieldset>
             <div id="inputForm">
-                <p>Please enter the the data of the transaction you wish to update or delete (For delete, only ID is required)</p>
+                <p>Please enter the the data of the transaction you wish to update or delete (For delete, only ID is
+                    required)</p>
             </div>
             <div id="inputForm">
                 <label for="id">ID</label>
-                <input value = "[+id+]" type="text" name="id" id="id" maxlength="45" size ="45">
+                <input value="[+id+]" type="text" name="id" id="id" maxlength="45" size="45">
                 <span style="color:red"> [+idError+]</span>
             </div>
             <div id="inputForm">
                 <label for="date">Date</label>
-                <input value = "[+date+]" type="date" name="date" id="date" maxlength="45" size ="45">
+                <input value="[+date+]" type="date" name="date" id="date" maxlength="45" size="45">
                 <span style="color:red"> [+dateError+]</span>
             </div>
             <div id="inputForm">
                 <label for="transaction">Transaction</label>
-                <input title="Name of the transaction"  value="[+transaction+]" type="text" name="transaction" id="transaction" maxlength="30" size ="45" placeholder="Enter the name of the transaction">
+                <input title="Name of the transaction" value="[+transaction+]" type="text" name="transaction"
+                    id="transaction" maxlength="30" size="45" placeholder="Enter the name of the transaction">
                 <span style="color:red">[+transactionError+]</span>
             </div>
             <div id="inputForm">
                 <label for="amount">Amount</label>
-                <input title="Input the amount of the transaction"  
-                            value="[+amount+]" type="text" name="amount" id="amount" maxlength="15" size ="45" placeholder="Enter the amount of the transaction">
-                            <span style="color:red"> [+amountError+]</span>						
+                <input title="Input the amount of the transaction" value="[+amount+]" type="text" name="amount"
+                    id="amount" maxlength="15" size="45" placeholder="Enter the amount of the transaction">
+                <span style="color:red"> [+amountError+]</span>
             </div>
             <div id="inputForm">
                 <label for="transactionCategory">Transaction Category</label>
                 <select name="transactionCategory" id="transactionCategory">
                     <option value="Necessity" [+necessitySelected+]>Necessity</option>
                     <option value="Want" [+wantSelected+]>Want</option>
-                    <option value="Emergency" [+emergencySelected+] >Emergency</option>
+                    <option value="Emergency" [+emergencySelected+]>Emergency</option>
                 </select>
             </div>
             <div id="inputForm">
@@ -42,4 +44,4 @@
             </div>
         </fieldset>
     </form>
-    </div>
+</div>

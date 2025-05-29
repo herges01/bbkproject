@@ -1,34 +1,68 @@
-<div id="userForm">
-    <form method="post" novalidate> <!-- post data to this script as no action attribute specified-->
-        <fieldset>
-            <div id="outputForm">
-                <label for="fromDate">From Date</label>
-                <input value = "[+fromDate+]" type="date" name="fromDate" id="fromDate" maxlength="45" size ="45">
-            </div>
-            <div id="outputForm">
-                <label for="toDate">To Date</label>
-                <input value = "[+toDate+]" type="date" name="toDate" id="toDate" maxlength="45" size ="45">
-            </div>
-            <div id="outputForm">
-                <label for="transactionCategory">Category</label>
-                <select name="transactionCategory" id="transactionCategory">
-                    <option value="All" [+allSelected+]>All</option>
-                    <option value="Necessity" [+necessitySelected+]>Necessity</option>
-                    <option value="Want" [+wantSelected+]>Want</option>
-                    <option value="Emergency" [+emergencySelected+] >Emergency</option>
-                </select>
-            </div>
-            <div id="buttonForm">
-                <input type="submit" name="dateSubmitted" value="Search">
-            </div>
-            <div id="buttonForm">
-                <input type="submit" name="ascSubmitted" value="Org by ascending date">
-                <input type="submit" name="descSubmitted" value="Org by descending date">
-            </div>
-            <div id="buttonForm">
-                <input type="submit" name="ascAmountSubmitted" value="Org by low to high">
-                <input type="submit" name="descAmountSubmitted" value="Org by high to low">
-            </div>
-        </fieldset>
-    </form>
+<button type="button" class="collapsible">Filter/Sort Transactions</button>
+<div class="collapsibleForm">
+    <div id="userForm">
+        <form method="post" novalidate> <!-- post data to this script as no action attribute specified-->
+            <fieldset>
+                <div id="outputForm">
+                    <p>Click search to reset back to normal view</p>
+                </div>
+                <div id="outputForm">
+                    <label for="fromDate">From Date</label>
+                    <input value="[+fromDate+]" type="date" name="fromDate" id="fromDate" maxlength="45" size="45">
+                </div>
+                <div id="outputForm">
+                    <label for="toDate">To Date</label>
+                    <input value="[+toDate+]" type="date" name="toDate" id="toDate" maxlength="45" size="45">
+                </div>
+                <div id="outputForm">
+                    <label for="transactionCategory">Category</label>
+                    <select name="transactionCategory" id="transactionCategory">
+                        <option value="All" [+allSelected+]>All</option>
+                        <option value="Necessity" [+necessitySelected+]>Necessity</option>
+                        <option value="Want" [+wantSelected+]>Want</option>
+                        <option value="Emergency" [+emergencySelected+]>Emergency</option>
+                    </select>
+                </div>
+                <div id="buttonForm">
+                    <input type="radio" name="orderByDate" value="asc">Org by ascending date
+                    <input type="radio" name="orderByDate" value="desc">Org by descending date
+                </div>
+                <div id="buttonForm">
+                    <input type="radio" name="orderByAmount" value="asc">Org by low to high
+                    <input type="radio" name="orderByAmount" value="desc">Org by high to low
+                </div>
+                <div id="buttonForm">
+                    <input type="submit" name="dateSubmitted" value="Search">
+                </div>
+            </fieldset>
+        </form>
+    </div>
 </div>
+<script>
+    var coll = document.getElementsByClassName("collapsible");
+
+    function setCollapsibleState() {
+        var content = document.querySelector('.collapsibleForm');
+        var stateInput = document.getElementById('collapsibleState');
+        if (content.style.maxHeight) {
+            stateInput.value = 'open';
+        } else {
+            stateInput.value = 'closed';
+        }
+    }
+
+    for (var i = 0; i < coll.length; i++) {
+        coll[i].addEventListener("click", function () {
+            this.classList.toggle("active");
+            var content = this.nextElementSibling;
+            if (content.style.maxHeight) {
+                content.style.maxHeight = null;
+                content.style.padding = "0 18px";
+            } else {
+                content.style.maxHeight = content.scrollHeight + "px";
+                content.style.padding = "18px";
+            }
+            setCollapsibleState();
+        });
+    }
+</script>

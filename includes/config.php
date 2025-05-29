@@ -22,5 +22,5 @@
                 echo "</p>FAILED to Connect to database: $db</p>";
                 echo "</p>check your connection parameters.</p>";
                 echo "</p>PDOexception message: $errorMessage</p>";
-        }
+        }   
 		?>

@@ -17,63 +17,57 @@ $totalSpentByCategory = null;
 
 
 $template = file_get_contents('html/outputForm.html');
-$form = str_replace('[+form]',$form, $template);
+$form = str_replace('[+form]', $form, $template);
 $content .= $form;
-if(isset($_POST['dateSubmitted']) && !empty($_POST['dateSubmitted'])) {
-    if(isset($_POST['fromDate']) && !empty($_POST['fromDate']) && 
-       isset($_POST['toDate']) && !empty($_POST['toDate'])) {
+if (isset($_POST['dateSubmitted']) && !empty($_POST['dateSubmitted'])) {
+    if (
+        isset($_POST['fromDate']) && !empty($_POST['fromDate']) &&
+        isset($_POST['toDate']) && !empty($_POST['toDate'])
+    ) {
         $fromDate = $_POST['fromDate'];
         $toDate = $_POST['toDate'];
-        $data = DateRange($fromDate,$toDate,$pdo,$db,$tableName,$mainParams);   
-    }
-    else if(isset($_POST['fromDate']) && !empty($_POST['fromDate'])) {
+        $data = DateRange($fromDate, $toDate, $pdo, $db, $tableName, $mainParams);
+    } else if (isset($_POST['fromDate']) && !empty($_POST['fromDate'])) {
         $fromDate = $_POST['fromDate'];
         $today = date('Y-m-d');
-        $data = DateRange($fromDate,$today,$pdo,$db,$tableName,$mainParams);
-    }
-    else if(isset($_POST['toDate']) && !empty($_POST['toDate'])) {
+        $data = DateRange($fromDate, $today, $pdo, $db, $tableName, $mainParams);
+    } else if (isset($_POST['toDate']) && !empty($_POST['toDate'])) {
         $toDate = $_POST['toDate'];
-        $data = DateRange('1970-01-01',$toDate,$pdo,$db,$tableName,$mainParams);
+        $data = DateRange('1970-01-01', $toDate, $pdo, $db, $tableName, $mainParams);
+    } else if (isset($_POST['transactionCategory']) && !empty($_POST['transactionCategory']) && $_POST['transactionCategory'] !== 'All') {
+        $data = TransactionCategory($pdo, $db, $tableName, $mainParams, $_POST['transactionCategory']);
+        $totalSpentByCategory = TotalSpentByCategory($pdo, $db, $tableName, $mainParams, $_POST['transactionCategory']);
     }
-    else if(isset($_POST['transactionCategory']) && !empty($_POST['transactionCategory']) && $_POST['transactionCategory'] !== 'All'){
-        $data = TransactionCategory($pdo,$db,$tableName,$mainParams,$_POST['transactionCategory']);
-        $totalSpentByCategory = TotalSpentByCategory($pdo,$db,$tableName,$mainParams,$_POST['transactionCategory']);
-    } 
-    $totalSpent = TotalSpent($pdo,$db,$tableName,$mainParams);  
+    $totalSpent = TotalSpent($pdo, $db, $tableName, $mainParams);
     $content .= htmlTable($totalSpent);
-    if($totalSpentByCategory !== null){
-        $content .= htmlTable($totalSpentByCategory);
+    if ($totalSpentByCategory !== null) {
+        $content .= htmlTable(idTableRemover($totalSpentByCategory));
     }
-}
-else if(isset($_POST['ascSubmitted']) && !empty($_POST['ascSubmitted'])){
-    $data = DateAscending($pdo,$db,$tableName,$mainParams);
-    $totalSpent = TotalSpent($pdo,$db,$tableName,$mainParams);  
+    if (isset($_POST['orderByDate'])) {
+        if ($_POST['orderByDate'] === 'asc') {
+            $data = DateAscending($data, $mainParams);
+        } elseif ($_POST['orderByDate'] === 'desc') {
+            $data = DateDescending($data, $mainParams);
+        }
+    } elseif (isset($_POST['orderByAmount'])) {
+        if ($_POST['orderByAmount'] === 'asc') {
+            $data = AmountAscending($data, $mainParams);
+        } elseif ($_POST['orderByAmount'] === 'desc') {
+            $data = AmountDescending($data, $mainParams);
+        }
+    }
+} else {
+    $data = UserDataFetcher($pdo, $db, $tableName);
+    $totalSpent = TotalSpent($pdo, $db, $tableName, $mainParams);
     $content .= htmlTable($totalSpent);
 }
-else if(isset($_POST['descSubmitted']) && !empty($_POST['descSubmitted'])){
-    $data = DateDescending($pdo,$db,$tableName,$mainParams);
-    $totalSpent = TotalSpent($pdo,$db,$tableName,$mainParams);  
-    $content .= htmlTable($totalSpent);
-}        
-else if(isset($_POST['ascAmountSubmitted']) && !empty($_POST['ascAmountSubmitted'])){
-    $data = AmountAscending($pdo,$db,$tableName,$mainParams);
-    $totalSpent = TotalSpent($pdo,$db,$tableName,$mainParams);  
-    $content .= htmlTable($totalSpent);
-}
-else if(isset($_POST['descAmountSubmitted']) && !empty($_POST['descAmountSubmitted'])){
-    $data = AmountDescending($pdo,$db,$tableName,$mainParams);
-    $totalSpent = TotalSpent($pdo,$db,$tableName,$mainParams);  
-    $content .= htmlTable($totalSpent);
-}   
-else{
-    $data = UserDataFetcher($pdo,$db,$tableName);
-    $totalSpent = TotalSpent($pdo,$db,$tableName,$mainParams);  
-    $content .= htmlTable($totalSpent);
-}   
 
 $dataPoints = [];
-foreach($data as $info){
-    $dataPoints[] = array("y" => $info['Amount'], "label" => $info['Date']);
+foreach ($data as $info) {
+    $date = $info['Date'];
+    $transaction = $info['Transaction']; // Assuming key matches DB field
+    $label = "{$date}\n({$transaction})";
+    $dataPoints[] = array("y" => $info['Amount'], "label" => $label);
 }
 
 ?>

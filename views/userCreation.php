@@ -53,9 +53,5 @@ if (isset($_POST['userDataSubmitted']) and $validData) { #form submitted and no 
 TableCreate($mainParams, $mainParamsAtt, $pdo, $db, $tableName);
 $template = file_get_contents('html/userCreationTemplate.html'); #get the html template contents
 $content .= $form;
-$content .= htmlHeading("Users Stored In The Database", 2);
 $data = UserDataFetcher($pdo, $db, $tableName);
-foreach ($data as $info) {
-	$content .= htmlParagraph('ID: ' . $info['userID'] . ' , ' . 'Username: ' . $info['Username']);
-}
 ?>

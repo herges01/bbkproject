@@ -33,7 +33,7 @@ if (isset($_POST['userDeleteSubmitted']) || isset($_POST['userUpdateSubmitted'])
 }
 
 if (isset($_POST['userDeleteSubmitted']) and $validData) { #form submitted and no errors
-    if (idMatcher($cleanData, $mainParams, $pdo, $db, $tableName)) {            
+    if (idMatcher($cleanData, $mainParams, $pdo, $db, $tableName)) {
         DeleteData($pdo, $db, $tableName, $mainParams, $cleanData); #correct order
         $placeholders = clearInputFormPlaceholders(); #after successfully inserting the data we clear the data for the next data entry
         $template = file_get_contents('html/updateDelForm.html'); #get the html form template
@@ -45,7 +45,7 @@ if (isset($_POST['userDeleteSubmitted']) and $validData) { #form submitted and n
         $form = str_replace(array_keys($placeholders), array_values($placeholders), $template);
     }
 } else if (isset($_POST['userUpdateSubmitted']) and $validData) {
-    if (idMatcher($cleanData, $mainParams, $pdo, $db, $tableName)) {    
+    if (idMatcher($cleanData, $mainParams, $pdo, $db, $tableName)) {
         UpdateData($pdo, $db, $tableName, $mainParams, $cleanData); #correct order
         $placeholders = clearInputFormPlaceholders(); #after successfully inserting the data we clear the data for the next data entry
         $template = file_get_contents('html/updateDelForm.html'); #get the html form template
