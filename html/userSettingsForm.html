@@ -1,0 +1,129 @@
+<button type="button" class="collapsible">Username Change</button>
+<div class="collapsibleForm">
+    <div id="userForm">
+        <form method="post" novalidate>
+            <fieldset>
+                <input type="hidden" name="usernameCollapsibleState" id="usernameCollapsibleState"
+                    value="[+usernameCollapsibleState+]">
+                <div id="inputForm">
+                    <label for="username">Old Username</label>
+                    <input title="At least 10 characters,alphanumeric and unique." value="[+oldUsername+]" type="text"
+                        name="oldUsername" maxlength="30" size="45" class="roboto-mono-custom">
+                    <span style="color:red"> [+oldUsernameError+]</span>
+                </div>
+                <div id="inputForm">
+                    <label for="username">New Username</label>
+                    <input title="At least 10 characters,alphanumeric and unique." value="[+newUsername+]" type="text"
+                        name="newUsername" maxlength="30" size="45" class="roboto-mono-custom">
+                    <span style="color:red"> [+newUsernameError+]</span>
+                </div>
+                <div id="inputForm">
+                    <input type="submit" name="userDataSubmittedUsername" value="Save new username">
+                    <input type="submit" name="userDataClear" value="Clear">
+                </div>
+            </fieldset>
+        </form>
+    </div>
+</div>
+
+
+<button type="button" class="collapsible">Password Change</button>
+<div class="collapsibleForm">
+    <div id="userForm">
+        <form method="post" novalidate>
+            <fieldset>
+                <input type="hidden" name="passwordCollapsibleState" id="passwordCollapsibleState"
+                    value="[+passwordCollapsibleState+]">
+                <div id="inputForm">
+                    <label for="password">New Password</label>
+                    <input
+                        title="At least 10 characters, must include: uppercase, lowercase alphabetic character, a number plus at least one of these special characters: £ $ % & * ~ #."
+                        value="[+password+]" type="text" name="password" maxlength="15" size="45"
+                        class="roboto-mono-custom">
+                    <span style="color:red"> [+passwordError+]</span>
+                </div>
+                <div id="inputForm">
+                    <label for="password">Repeat new assword</label>
+                    <input
+                        title="At least 10 characters, must include: uppercase, lowercase alphabetic character, a number plus at least one of these special characters: £ $ % & * ~ #."
+                        value="[+newPassword+]" type="text" name="newPassword" id="password" maxlength="15" size="45"
+                        class="roboto-mono-custom">
+                    <span style="color:red"> [+newPasswordError+]</span>
+                </div>
+                <div id="inputForm">
+                    <input type="submit" name="userDataSubmittedPassword" value="Save new password">
+                    <input type="submit" name="userDataClear" value="Clear">
+                </div>
+            </fieldset>
+        </form>
+    </div>
+</div>
+
+
+<script>
+    var coll = document.getElementsByClassName("collapsible");
+    var i;
+
+    // Function to set collapsible state
+    function setCollapsibleState(button, stateInput) {
+        var content = button.nextElementSibling;
+        if (content.style.maxHeight) {
+            stateInput.value = 'open';
+        } else {
+            stateInput.value = 'closed';
+        }
+    }
+
+    // Initialize collapsible states from PHP
+    window.onload = function () {
+        var usernameState = document.getElementById('usernameCollapsibleState');
+        var passwordState = document.getElementById('passwordCollapsibleState');
+
+        if (usernameState && usernameState.value === 'open') {
+            var usernameButton = document.querySelector('.collapsible');
+            var usernameContent = usernameButton.nextElementSibling;
+            usernameButton.classList.add('active');
+            usernameContent.style.maxHeight = usernameContent.scrollHeight + "px";
+            usernameContent.style.padding = "18px";
+        }
+
+        if (passwordState && passwordState.value === 'open') {
+            var passwordButton = document.querySelectorAll('.collapsible')[1];
+            var passwordContent = passwordButton.nextElementSibling;
+            passwordButton.classList.add('active');
+            passwordContent.style.maxHeight = passwordContent.scrollHeight + "px";
+            passwordContent.style.padding = "18px";
+        }
+    }
+
+    for (i = 0; i < coll.length; i++) {
+        coll[i].addEventListener("click", function () {
+            this.classList.toggle("active");
+            var content = this.nextElementSibling;
+            if (content.style.maxHeight) {
+                content.style.maxHeight = null;
+                content.style.padding = "0 18px";
+            } else {
+                content.style.maxHeight = content.scrollHeight + "px";
+                content.style.padding = "18px";
+            }
+
+            // Find the corresponding state input
+            var stateInput = this.nextElementSibling.querySelector('input[type="hidden"]');
+            if (stateInput) {
+                setCollapsibleState(this, stateInput);
+            }
+        });
+    }
+
+    // Update states when forms are submitted
+    document.querySelectorAll('form').forEach(form => {
+        form.addEventListener('submit', function () {
+            var stateInput = this.querySelector('input[type="hidden"]');
+            var button = this.closest('.collapsibleForm').previousElementSibling;
+            if (stateInput && button) {
+                setCollapsibleState(button, stateInput);
+            }
+        });
+    });
+</script>

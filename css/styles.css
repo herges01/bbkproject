@@ -63,9 +63,6 @@ padding: 0.5em;
 td {
 text-align: left;
 }
-  /* --- custom.css content below --- */
-  
-  /* Custom styles for forms and tables */
   
   /* Form styles */
   #userForm {
@@ -122,7 +119,7 @@ text-align: left;
 	  background-color: #45a049;
   }
   
-  /* Table styles */
+  /* Table */
   table {
 	  width: 70%;
 	  border-collapse: collapse;
@@ -147,14 +144,14 @@ text-align: left;
 	  background-color: #f9f9f9;
   }
   
-  /* Error message styles */
+  /* Error message*/
   span[style*="color:red"] {
 	  display: block;
 	  margin-top: 5px;
 	  font-size: 16px;
   }
   
-  /* Header styles */
+  /* Header */
   header {
 	  background: #fff;
 	  padding: 20px;
@@ -167,14 +164,14 @@ text-align: left;
 	  margin-bottom: 10px;
   }
   
-  /* Main content styles */
+  /* Main  */
   main {
 	  max-width: 1200px;
 	  margin: 0 auto;
 	  padding: 20px;
   }
   
-  /* Navigation styles */
+  /* Navigation Menu */
   nav ul {
 	  list-style: none;
 	  padding: 0;
@@ -369,3 +366,53 @@ text-align: left;
   font-style: normal;
 }
   
+.collapsible {
+    background-color: #801e16;
+    color: #fff;
+    cursor: pointer;
+    padding: 18px;
+    width: 70%;
+    border: none;
+    text-align: left;
+    outline: none;
+    font-size: 20px;
+    transition: 0.3s;
+    margin-bottom: 2px;
+    border-radius: 4px;
+}
+
+.collapsible:hover {
+    background-color: #9b2520;
+}
+
+.collapsible.active {
+    background-color: #9b2520;
+}
+
+.collapsible:after {
+    content: '\002B';
+    color: white;
+    font-weight: bold;
+    float: right;
+    margin-left: 5px;
+}
+
+.collapsible.active:after {
+    content: "\2212";
+}
+
+.collapsibleForm {
+    padding: 0 18px;
+    background-color: white;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.2s ease-out;
+    border-radius: 0 0 4px 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 10px;
+}
+
+.collapsibleForm.active {
+    max-height: 500px;
+    padding: 18px;
+}

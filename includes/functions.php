@@ -164,11 +164,10 @@ function UserDataFetcher($pdo, $db, $tableName)
 function NAVsetter($data)
 {
 	$selectedNAV = ['home' => 'Home'];  #default value
-	if(isset($_SESSION['uname']) && isset($_SESSION['pwd'])){ #This is to ensure the correct nav menu always loads 
-		$selectedNAV = ['home'=>'Home','userTransaction'=> 'User Transaction','userInput'=> 'User Input','userDelUp'=> 'User Delete & Update','graph'=>'Graph'];
-	}
-	else{
-		$selectedNAV = ['home'=>'Home','userCreation'=>'User Creation'];
+	if (isset($_SESSION['uname']) && isset($_SESSION['pwd'])) { #This is to ensure the correct nav menu always loads 
+		$selectedNAV = ['home' => 'Home', 'userTransaction' => 'User Transaction', 'userInput' => 'User Input', 'userDelUp' => 'User Delete & Update', 'graph' => 'Graph', 'userSettings' => 'User Settings'];
+	} else {
+		$selectedNAV = ['home' => 'Home', 'userCreation' => 'User Creation'];
 	}
 	return $selectedNAV;
 }
@@ -216,7 +215,7 @@ function validateformDatalogin($formData)
 	#process the submitted form data setting placeholders and validates all the form data elements
 	$validData = true; #assume all form data is valid until any one form element fails
 	$cleanData = array(); #array to hold form data which passes validation
-	$formPlaceholders = clearFormPlaceholders(); #reset all form placeholders to NULL
+	$formPlaceholders = clearFormPlaceholdersLogin(); #reset all form placeholders to NULL
 
 	#set the value placeholders for the form data submitted
 	$formPlaceholders['[+username+]'] = trim(htmlentities($formData['username']));
@@ -235,7 +234,7 @@ function validateformDatalogin($formData)
 	}
 
 	if (!isset($formData['password']) || empty(trim($formData['password']))) {
-		$validData = false;	
+		$validData = false;
 		$formPlaceholders['[+passwordError+]'] = 'Password is required';
 	} elseif (!validPassword(trim($formData['password']))) {
 		$validData = false;
@@ -343,7 +342,7 @@ function validateInputformData($formData)
 			$cleanData['id'] = trim($formData['id']);
 		}
 
-		if (isset($_POST['userDeleteSubmitted'])){
+		if (isset($_POST['userDeleteSubmitted'])) {
 			return [$validData, $cleanData, $formPlaceholders];
 		}
 	}
@@ -518,34 +517,20 @@ function DateRange($fromDate, $toDate, $pdo, $db, $tableName, $mainParams)
 	}
 }
 
-function DateAscending($pdo, $db, $tableName, $mainParams)
+function DateAscending($data, $mainParams)
 {
-	$sql = "SELECT * FROM `{$db}`.`{$tableName}` ORDER BY `{$mainParams['date']}` ASC";
-	try {
-		$stmt = $pdo->prepare($sql);
-		$stmt->execute();
-		$data = $stmt->fetchAll(PDO::FETCH_ASSOC);
-		return $data;
-	} catch (PDOException $e) {
-		$errorCode = $e->getCode();
-		$errorMessage = $e->getMessage();
-		return htmlParagraph("$errorCode : $errorMessage");
-	}
+	usort($data, function ($a, $b) use ($mainParams) {
+		return strtotime($a[$mainParams['date']]) <=> strtotime($b[$mainParams['date']]);
+	});
+	return $data;
 }
 
-function DateDescending($pdo, $db, $tableName, $mainParams)
+function DateDescending($data, $mainParams)
 {
-	$sql = "SELECT * FROM `{$db}`.`{$tableName}` ORDER BY `{$mainParams['date']}` DESC";
-	try {
-		$stmt = $pdo->prepare($sql);
-		$stmt->execute();
-		$data = $stmt->fetchAll(PDO::FETCH_ASSOC);
-		return $data;
-	} catch (PDOException $e) {
-		$errorCode = $e->getCode();
-		$errorMessage = $e->getMessage();
-		return htmlParagraph("$errorCode : $errorMessage");
-	}
+	usort($data, function ($a, $b) use ($mainParams) {
+		return strtotime($b[$mainParams['date']]) <=> strtotime($a[$mainParams['date']]);
+	});
+	return $data;
 }
 
 function TransactionCategory($pdo, $db, $tableName, $mainParams, $category)
@@ -562,6 +547,15 @@ function TransactionCategory($pdo, $db, $tableName, $mainParams, $category)
 		$errorMessage = $e->getMessage();
 		return htmlParagraph("$errorCode : $errorMessage");
 	}
+}
+
+function idTableRemover($data)
+{
+	foreach ($data as &$row) {
+		unset($row['Transaction ID']);
+	}
+	unset($row);
+	return $data;
 }
 
 function TotalSpent($pdo, $db, $tableName, $mainParams)
@@ -597,34 +591,20 @@ function TotalSpentByCategory($pdo, $db, $tableName, $mainParams, $category)
 	}
 }
 
-function AmountAscending($pdo, $db, $tableName, $mainParams)
+function AmountAscending($data, $mainParams)
 {
-	$sql = "SELECT * FROM `{$db}`.`{$tableName}` ORDER BY `{$mainParams['amount']}` ASC";
-	try {
-		$stmt = $pdo->prepare($sql);
-		$stmt->execute();
-		$data = $stmt->fetchAll(PDO::FETCH_ASSOC);
-		return $data;
-	} catch (PDOException $e) {
-		$errorCode = $e->getCode();
-		$errorMessage = $e->getMessage();
-		return htmlParagraph("$errorCode : $errorMessage");
-	}
+	usort($data, function ($a, $b) use ($mainParams) {
+		return $a[$mainParams['amount']] <=> $b[$mainParams['amount']];
+	});
+	return $data;
 }
 
-function AmountDescending($pdo, $db, $tableName, $mainParams)
+function AmountDescending($data, $mainParams)
 {
-	$sql = "SELECT * FROM `{$db}`.`{$tableName}` ORDER BY `{$mainParams['amount']}` DESC";
-	try {
-		$stmt = $pdo->prepare($sql);
-		$stmt->execute();
-		$data = $stmt->fetchAll(PDO::FETCH_ASSOC);
-		return $data;
-	} catch (PDOException $e) {
-		$errorCode = $e->getCode();
-		$errorMessage = $e->getMessage();
-		return htmlParagraph("$errorCode : $errorMessage");
-	}
+	usort($data, function ($a, $b) use ($mainParams) {
+		return $b[$mainParams['amount']] <=> $a[$mainParams['amount']];
+	});
+	return $data;
 }
 
 function UpdateData($pdo, $db, $tableName, $mainParams, $cleanData)
@@ -689,6 +669,184 @@ function idMatcher($cleanData, $mainParams, $pdo, $db, $tableName)
 		$errorCode = $e->getCode();
 		$errorMessage = $e->getMessage();
 		return htmlParagraph("$errorCode : $errorMessage");
+	}
+}
+
+function clearFormPlaceholdersSettings()
+{
+	$placeHolders = [
+		'[+oldUsername+]' => '',
+		'[+newUsername+]' => '',
+		'[+oldUsernameError+]' => '',
+		'[+newUsernameError+]' => '',
+		'[+password+]' => '',
+		'[+passwordError+]' => '',
+		'[+newPassword+]' => '',
+		'[+newPasswordError+]' => ''
+	];
+	return $placeHolders;
+}
+function validateformDataSettings($formData)
+{
+	$validData = true;
+	$cleanData = array();
+	$placeholdersSettings = array();
+
+	// Initialize placeholders
+	$placeholdersSettings = [
+		'[+oldUsername+]' => '',
+		'[+oldUsernameError+]' => '',
+		'[+newUsername+]' => '',
+		'[+newUsernameError+]' => '',
+		'[+password+]' => '',
+		'[+passwordError+]' => '',
+		'[+newPassword+]' => '',
+		'[+newPasswordError+]' => ''
+	];
+
+	// Validate username change
+	if (isset($formData['userDataSubmittedUsername'])) {
+		// Validate old username
+		if (empty($formData['oldUsername'])) {
+			$validData = false;
+			$placeholdersSettings['[+oldUsernameError+]'] = 'Current username is required';
+		} else {
+			$cleanData['oldUsername'] = trim($formData['oldUsername']);
+			$placeholdersSettings['[+oldUsername+]'] = $cleanData['oldUsername'];
+		}
+
+		// Validate new username
+		if (empty($formData['newUsername'])) {
+			$validData = false;
+			$placeholdersSettings['[+newUsernameError+]'] = 'New username is required';
+		} else {
+			$cleanData['newUsername'] = trim($formData['newUsername']);
+			$placeholdersSettings['[+newUsername+]'] = $cleanData['newUsername'];
+
+			// Check if new username is different from old username
+			if (isset($cleanData['oldUsername']) && $cleanData['newUsername'] === $cleanData['oldUsername']) {
+				$validData = false;
+				$placeholdersSettings['[+newUsernameError+]'] = 'New username must be different from current username';
+			}
+
+			// Validate username format
+			if (!preg_match('/^[a-zA-Z0-9]{10,30}$/', $cleanData['newUsername'])) {
+				$validData = false;
+				$placeholdersSettings['[+newUsernameError+]'] = 'Username must be 10-30 characters and alphanumeric only';
+			}
+		}
+	}
+
+	// Validate password change
+	if (isset($formData['userDataSubmittedPassword'])) {
+		// Validate new password (first password input)
+		if (empty($formData['password'])) {
+			$validData = false;
+			$placeholdersSettings['[+passwordError+]'] = 'New password is required';
+		} else {
+			$cleanData['password'] = trim($formData['password']);
+			$placeholdersSettings['[+password+]'] = $cleanData['password'];
+
+			// Validate password format
+			if (!validPassword($cleanData['password'])) {
+				$validData = false;
+				$placeholdersSettings['[+passwordError+]'] = 'Password must be 10-15 characters and include uppercase, lowercase, number, and special character';
+			}
+		}
+
+		// Validate current password matches new password confirmation (second password input)
+		if (empty($formData['newPassword'])) {
+			$validData = false;
+			$placeholdersSettings['[+newPasswordError+]'] = 'Please confirm the new password';
+		} else {
+			$cleanData['newPassword'] = trim($formData['newPassword']);
+			$placeholdersSettings['[+newPassword+]'] = $cleanData['newPassword'];
+
+			// Check if confirmation matches new password
+			if (isset($cleanData['password']) && $cleanData['newPassword'] !== $cleanData['password']) {
+				$validData = false;
+				$placeholdersSettings['[+newPasswordError+]'] = 'Passwords do not match';
+			}
+		}
+	}
+
+	return array($validData, $cleanData, $placeholdersSettings);
+}
+
+function updateUsername($pdo, $db, $tableName, $oldUsername, $newUsername)
+{
+	try {
+		$sql = "UPDATE `{$db}`.`{$tableName}` SET `Username` = :newUsername WHERE `Username` = :oldUsername";
+		$stmt = $pdo->prepare($sql);
+		$stmt->bindParam(':newUsername', $newUsername);
+		$stmt->bindParam(':oldUsername', $oldUsername);
+		$stmt->execute();
+
+		if ($stmt->rowCount() === 0) {
+			throw new PDOException("No user updated - old username may not exist");
+		}
+		return true;
+	} catch (PDOException $e) {
+		error_log("Update username in users table failed: " . $e->getMessage());
+		return false;
+	}
+}
+
+function renameTable($pdo, $db, $oldUsername, $newUsername)
+{
+	try {
+		$oldTableName = "{$oldUsername}TransactionsTable";
+		$newTableName = "{$newUsername}TransactionsTable";
+
+		// Check if the old transactions table exists
+		$checkSql = "SELECT COUNT(*) FROM INFORMATION_SCHEMA.TABLES 
+                     WHERE TABLE_SCHEMA = :db AND TABLE_NAME = :tableName";
+		$stmt = $pdo->prepare($checkSql);
+		$stmt->execute([':db' => $db, ':tableName' => $oldTableName]);
+		$tableExists = $stmt->fetchColumn() > 0;
+
+		if ($tableExists) {
+			$renameSql = "RENAME TABLE `{$db}`.`{$oldTableName}` TO `{$db}`.`{$newTableName}`";
+			$result = $pdo->exec($renameSql);
+			if ($result === false) {
+				throw new PDOException("Failed to rename transactions table");
+			}
+		}
+		return true;
+	} catch (PDOException $e) {
+		error_log("Rename transactions table failed: " . $e->getMessage());
+		return false;
+	}
+}
+
+function updatePassword($pdo, $db, $tableName, $newPassword, $username)
+{
+	try {
+		$pdo->beginTransaction();
+
+		$sql = "UPDATE `{$db}`.`{$tableName}` SET `Password` = :newPassword WHERE `Username` = :username";
+
+		$stmt = $pdo->prepare($sql);
+		$stmt->bindParam(':newPassword', $newPassword);
+		$stmt->bindParam(':username', $username);
+
+		$stmt->execute();
+
+		$affected = $stmt->rowCount();
+		error_log("Password update affected rows: {$affected}");
+
+		if ($affected === 0) {
+			throw new PDOException("No rows updated — username may be incorrect");
+		}
+
+		$pdo->commit();
+		return true;
+	} catch (PDOException $e) {
+		if ($pdo->inTransaction()) {
+			$pdo->rollBack();
+		}
+		error_log("Password update failed: " . $e->getMessage());
+		return false;
 	}
 }
 ?>
