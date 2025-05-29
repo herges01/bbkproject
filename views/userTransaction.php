@@ -24,14 +24,29 @@ if (isset($_POST['dateSubmitted']) && !empty($_POST['dateSubmitted'])) { #this i
     ) {
         $fromDate = $_POST['fromDate'];
         $toDate = $_POST['toDate'];
-        $data = DateRange($fromDate, $toDate, $pdo, $db, $tableName, $mainParams);
+        if (isset($_POST['transactionCategory']) && !empty($_POST['transactionCategory']) && $_POST['transactionCategory'] !== 'All') {
+            $data = DateCategoryRange($fromDate, $toDate, $pdo, $db, $tableName, $mainParams, $_POST['transactionCategory']);
+            $totalSpentByCategory = TotalSpentByCategory($pdo, $db, $tableName, $mainParams, $_POST['transactionCategory']);
+        } else {
+            $data = DateRange($fromDate, $toDate, $pdo, $db, $tableName, $mainParams);
+        }
     } else if (isset($_POST['fromDate']) && !empty($_POST['fromDate'])) { #only from date set
         $fromDate = $_POST['fromDate'];
         $today = date('Y-m-d');
-        $data = DateRange($fromDate, $today, $pdo, $db, $tableName, $mainParams);
+        if (isset($_POST['transactionCategory']) && !empty($_POST['transactionCategory']) && $_POST['transactionCategory'] !== 'All') {
+            $data = DateCategoryRange($fromDate, $today, $pdo, $db, $tableName, $mainParams, $_POST['transactionCategory']);
+            $totalSpentByCategory = TotalSpentByCategory($pdo, $db, $tableName, $mainParams, $_POST['transactionCategory']);
+        } else {
+            $data = DateRange($fromDate, $today, $pdo, $db, $tableName, $mainParams);
+        }
     } else if (isset($_POST['toDate']) && !empty($_POST['toDate'])) { #only to date set
         $toDate = $_POST['toDate'];
-        $data = DateRange('1970-01-01', $toDate, $pdo, $db, $tableName, $mainParams);
+        if (isset($_POST['transactionCategory']) && !empty($_POST['transactionCategory']) && $_POST['transactionCategory'] !== 'All') {
+            $data = DateCategoryRange('1970-01-01', $toDate, $pdo, $db, $tableName, $mainParams, $_POST['transactionCategory']);
+            $totalSpentByCategory = TotalSpentByCategory($pdo, $db, $tableName, $mainParams, $_POST['transactionCategory']);
+        } else {
+            $data = DateRange('1970-01-01', $toDate, $pdo, $db, $tableName, $mainParams);
+        }
     } else if (isset($_POST['transactionCategory']) && !empty($_POST['transactionCategory']) && $_POST['transactionCategory'] !== 'All') { #category chosen
         $data = TransactionCategory($pdo, $db, $tableName, $mainParams, $_POST['transactionCategory']);
         $totalSpentByCategory = TotalSpentByCategory($pdo, $db, $tableName, $mainParams, $_POST['transactionCategory']);
@@ -59,6 +74,6 @@ if (isset($_POST['dateSubmitted']) && !empty($_POST['dateSubmitted'])) { #this i
     $data = UserDataFetcher($pdo, $db, $tableName);
     $totalSpent = TotalSpent($pdo, $db, $tableName, $mainParams);
     $content .= htmlTable($totalSpent);
-    $content .= htmlTable(idTableRemover($data));
+    $content .= htmlTable(idTableRemover($data)); 
 }
 ?>

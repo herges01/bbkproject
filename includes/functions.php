@@ -516,6 +516,23 @@ function DateRange($fromDate, $toDate, $pdo, $db, $tableName, $mainParams)
 		return htmlParagraph("$errorCode : $errorMessage");
 	}
 }
+function DateCategoryRange($fromDate, $toDate, $pdo, $db, $tableName, $mainParams,$category)
+{
+	$sql = "SELECT * FROM `{$db}`.`{$tableName}` WHERE `{$mainParams['date']}` BETWEEN :fromDate AND :toDate AND `{$mainParams['category']}` = :category";
+	try {
+		$stmt = $pdo->prepare($sql);
+		$stmt->bindParam(':fromDate', $fromDate);
+		$stmt->bindParam(':toDate', $toDate);
+		$stmt->bindParam(':category', $category);
+		$stmt->execute();
+		$data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+		return $data;
+	} catch (PDOException $e) {
+		$errorCode = $e->getCode();
+		$errorMessage = $e->getMessage();
+		return htmlParagraph("$errorCode : $errorMessage");
+	}
+}
 
 function DateAscending($data, $mainParams)
 {
@@ -849,4 +866,4 @@ function updatePassword($pdo, $db, $tableName, $newPassword, $username)
 		return false;
 	}
 }
-?>
+?>	
